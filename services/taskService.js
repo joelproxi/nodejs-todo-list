@@ -34,3 +34,26 @@ module.exports.getTask = async (data) => {
     }
 };
 
+module.exports.updateTask = async (data) => {
+    try {
+        const task = await TaskModel.findOneAndUpdate(
+          {
+            _id: data.params.id,
+          },
+          {
+            $set: {
+              title: data.body.title,
+              content: data.body.content,
+            }
+          },
+          {
+            upsert: true, new: true, setDefaultsOnInsert: true
+          }
+        );
+        return task.toObject()
+    } catch (error) {
+        console.error("error in taskserives", error.message);
+        throw new Error(error.message);
+    }
+}
+

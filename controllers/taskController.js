@@ -1,6 +1,6 @@
 const { isValidObjectId } = require("mongoose")
 const ObjectID = require("mongoose").Types.ObjectId
-const { addTask, getTasks, getTask } = require("../services/taskService")
+const { addTask, getTasks, getTask, updateTask } = require("../services/taskService")
 
 module.exports.addTask = async (req, res, next) => {
     let response = {}
@@ -61,3 +61,24 @@ module.exports.getTask = async (req, res) => {
     }
     return res.status(response.status).send(response);
 };
+
+module.exports.updateTask = async (req, res, next) => {
+    if(!isValidObjectId(req.params.id)) 
+        return res.status(404).send({ message: "Invalid id"});
+
+    let response = {}
+    try {
+        let task = await updateTask(req)
+        response = {
+            status: 200,
+            message: "Task updated successfully",
+            body: task
+        }
+    } catch (error) {
+        response = {
+            status: 400,
+            message: error.message,
+       }; 
+    }
+    return res.status(response.status).send(response);
+}
