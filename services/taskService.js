@@ -53,7 +53,19 @@ module.exports.updateTask = async (data) => {
         return task.toObject()
     } catch (error) {
         console.error("error in taskserives", error.message);
-        throw new Error(error.message);
+        throw new Error(error);
+    }
+}
+
+module.exports.deleteTask = async(req, res, next) => {
+    try {
+        const task = await TaskModel.findOneAndRemove({
+            _id: req.params.id
+        })
+        return task;
+    } catch (error) {
+        console.error("Error in file task service: " + error.message);
+        throw new Error(error);
     }
 }
 

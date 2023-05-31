@@ -13,7 +13,6 @@ const tasksSchema = new mongoose.Schema(
             required: true,
             maxLength: 500,
         }
-
     },
     {
         timestamps: true,

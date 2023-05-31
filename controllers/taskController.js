@@ -1,6 +1,6 @@
 const { isValidObjectId } = require("mongoose")
 const ObjectID = require("mongoose").Types.ObjectId
-const { addTask, getTasks, getTask, updateTask } = require("../services/taskService")
+const { addTask, getTasks, getTask, updateTask, deleteTask } = require("../services/taskService")
 
 module.exports.addTask = async (req, res, next) => {
     let response = {}
@@ -31,12 +31,13 @@ module.exports.getTasks = async (req, res, next) => {
             body: tasks
         }
     } catch (error) {
-         response = {
-           status: 400,
-           message: error.message,
-           body: error,
-         };
-         console.error("Error in file taskController", error.message);
+        response = {
+        status: 400,
+        message: error.message,
+        body: error,
+        };
+        console.error("Error in file taskController", error.message);
+        throw new Error(error)
     }
     return res.status(response.status).send(response);
 }
@@ -58,13 +59,15 @@ module.exports.getTask = async (req, res) => {
            status: 500,
            message: error.message,
          };
+        console.error("Error in file taskController", error.message);
+        throw new Error(error);
     }
     return res.status(response.status).send(response);
 };
 
 module.exports.updateTask = async (req, res, next) => {
     if(!isValidObjectId(req.params.id)) 
-        return res.status(404).send({ message: "Invalid id"});
+        return res.status(500).send({ message: "Invalid id"});
 
     let response = {}
     try {
@@ -79,6 +82,33 @@ module.exports.updateTask = async (req, res, next) => {
             status: 400,
             message: error.message,
        }; 
+       console.error("Error in file taskController", error.message);
+       throw new Error(error);
     }
     return res.status(response.status).send(response);
 }
+
+
+module.exports.deleteTask = async (req, res) => {
+    if(!isValidObjectId(req.params.id)) {
+        return res.status(500).send({ message: "Invalid id" });
+    }
+    
+    let response = {}
+    try {
+        const task = await deleteTask(req)
+        response = {
+          status: 204,
+          message: "Task deleted successfully",
+          body: task,
+        };
+    } catch (error) {
+        response = {
+          status: 400,
+          message: error.message,
+        }; 
+        console.error("Error in file taskController", error.message);
+        throw new Error(error);
+    }
+    return res.status(response.status).send(response); 
+};
